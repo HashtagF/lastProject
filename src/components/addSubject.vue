@@ -56,7 +56,6 @@ export default {
     }
   },
   computed: {
-
   },
   methods: {
     ...mapActions([

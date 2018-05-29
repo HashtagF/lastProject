@@ -5,7 +5,7 @@
         <h1>Dashboard</h1>
       </div>
       <div class="6">
-        <h3>รหัสนักศึกษา: {{id}}</h3>
+        <h5>รหัสนักศึกษา: {{ id }}</h5>
       </div>
     </div>
     <div class="row  d-flex justify-content-end">
@@ -27,14 +27,18 @@
             <td>{{index}}</td>
             <td>{{sub.name}}</td>
             <td>{{sub.credit}}</td>
-            <td> <input class="form-control" type="number" :value="sub.score" @> </td>
+            <td> <input class="form-control" type="number" v-model="sub.score" @keyup.enter="editScore(sub, index)" min=0 max=100> </td>
             <td>{{ grade(sub.score) }}</td>
             <td> <a href="#" @click="delSubject(index)"> <img src="../assets/del.svg" alt=""> </a></td>
           </tr>
         </table>
       </div>
     </div>
-
+    <div class="row">
+      <div class="col-12">
+        <h5>เกรดเฉลี่ย : {{avgGrade/totalCredit}}</h5>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,7 +48,10 @@ export default {
   name: 'addSubject',
   data () {
     return {
-      score: ''
+      score: {
+        score: '',
+        key: ''
+      }
     }
   },
   created () {
@@ -54,12 +61,46 @@ export default {
     ...mapGetters([
       'subject',
       'id'
-    ])
+    ]),
+    avgGrade: function () {
+      let total = 0
+      for (var key in this.subject) {
+        var score = this.subject[key].score
+        var credit = parseInt(this.subject[key].credit)
+        if (score <= 100 && score >= 80) {
+          total += 4 * credit
+        } else if (score >= 75 && score < 80) {
+          total += 3.5 * credit
+        } else if (score >= 70 && score < 75) {
+          total += 3 * credit
+        } else if (score >= 65 && score < 70) {
+          total += 2.5 * credit
+        } else if (score >= 60 && score < 65) {
+          total += 2 * credit
+        } else if (score >= 55 && score < 60) {
+          total += 1.5 * credit
+        } else if (score >= 50 && score < 55) {
+          total += 1 * credit
+        } else {
+          total += 0 * credit
+        }
+      }
+      return total
+    },
+    totalCredit: function () {
+      let total = 0
+      for (var key in this.subject) {
+        var credit = parseInt(this.subject[key].credit)
+        total += credit
+      }
+      return total
+    }
   },
   methods: {
     ...mapActions([
       'showSubject',
-      'removeSubject'
+      'removeSubject',
+      'updateScore'
     ]),
     addSubject () {
       this.$router.push({path: '/addSubject'})
@@ -70,21 +111,26 @@ export default {
     grade (score) {
       if (score <= 100 && score >= 80) {
         return 'A'
-      } else if (score >= 75) {
+      } else if (score >= 75 && score < 80) {
         return 'B+'
-      } else if (score >= 70) {
+      } else if (score >= 70 && score < 75) {
         return 'B'
-      } else if (score >= 65) {
+      } else if (score >= 65 && score < 70) {
         return 'C+'
-      } else if (score >= 60) {
+      } else if (score >= 60 && score < 65) {
         return 'C'
-      } else if (score >= 55) {
+      } else if (score >= 55 && score < 60) {
         return 'D+'
-      } else if (score >= 50) {
+      } else if (score >= 50 && score < 55) {
         return 'D'
       } else {
         return 'F'
       }
+    },
+    editScore (sub, key) {
+      this.score.score = sub.score
+      this.score.key = key
+      this.updateScore(this.score)
     }
   }
 

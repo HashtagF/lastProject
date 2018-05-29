@@ -44,6 +44,7 @@ export const store = new Vuex.Store({
     inputSubject (context, subject) {
       db.ref('Std/' + context.state.id + '/Subject').child(subject.id + '/name').set(subject.name)
       db.ref('Std/' + context.state.id + '/Subject').child(subject.id + '/credit').set(subject.credit)
+      db.ref('Std/' + context.state.id + '/Subject').child(subject.id + '/score').set(0)
     },
     showSubject (context) {
       var ref = db.ref('Std/' + context.state.id + '/Subject')
@@ -53,6 +54,9 @@ export const store = new Vuex.Store({
     },
     removeSubject (context, key) {
       db.ref('Std/' + context.state.id + '/Subject').child(key).remove()
+    },
+    updateScore (context, subject) {
+      db.ref('Std/' + context.state.id + '/Subject').child(subject.key + '/score').set(subject.score)
     }
   }
 })
