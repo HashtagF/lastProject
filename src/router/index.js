@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Input from '@/components/Input'
-import Order from '@/components/Order'
+import Home from '@/components/Home'
+import addSubject from '@/components/addSubject'
+import Dashboard from '@/components/Dashboard'
 
 Vue.use(Router)
 
@@ -9,13 +10,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Input',
-      component: Input
+      name: 'Home',
+      component: Home
     },
     {
-      path: '/Order',
-      name: Order,
-      component: Order
+      path: '/addSubject',
+      name: 'addSubject',
+      component: addSubject
+    },
+    {
+      path: '/Dashboard',
+      name: 'Dashboard',
+      component: Dashboard
     }
   ]
 })

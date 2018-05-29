@@ -3,12 +3,12 @@ import Vuex from 'vuex'
 import firebase from 'firebase'
 
 let config = {
-  apiKey: 'AIzaSyDZiGEHS_dMBgz43QBCCdoKN5KX-Rulc6U',
-  authDomain: 'vue-project-4a8f5.firebaseapp.com',
-  databaseURL: 'https://vue-project-4a8f5.firebaseio.com',
-  projectId: 'vue-project-4a8f5',
-  storageBucket: 'vue-project-4a8f5.appspot.com',
-  messagingSenderId: '232717547987'
+  apiKey: 'AIzaSyDRkJQQydkBc0PZb4Qlpy2fLJ_IS',
+  authDomain: 'lastproject-c8f16.firebaseapp.com',
+  databaseURL: 'https://lastproject-c8f16.firebaseio.com',
+  projectId: 'lastproject-c8f16',
+  storageBucket: 'lastproject-c8f16.appspot.com',
+  messagingSenderId: '414391414519'
 }
 var firebaseApp = firebase.initializeApp(config)
 let provider = new firebase.auth.FacebookAuthProvider()
@@ -20,56 +20,39 @@ var db = firebaseApp.database()
 Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
-    product: {},
-    productall: [],
-    carts: {}
+    id: '',
+    subject: []
   },
   getters: {
-    product: state => state.product,
-    productall: state => state.productall,
-    carts: state => state.carts
+    id: state => state.id,
+    subject: state => state.subject
   },
   mutations: {
-    setProduct (state, product) {
-      state.product = product
+    setID (state, id) {
+      state.id = id
     },
-    setProductall (state, product) {
-      state.productall = product
-    },
-    setCarts (state, carts) {
-      state.carts = carts
+    setSubject (state, subject) {
+      state.subject = subject
     }
   },
   actions: {
-    inputProduct (context, product) {
-      db.ref('products').push(product)
+    inputStd (context, std) {
+      db.ref('Std').child(std.id + '/name').set(std.name)
+      db.ref('Std').child(std.id + '/last').set(std.last)
+      context.commit('setID', std.id)
     },
-    showCarts (context) {
-      db.ref('carts').on('value', (snapshot) => {
-        context.commit('setCarts', snapshot.val())
-      })
+    inputSubject (context, subject) {
+      db.ref('Std/' + context.state.id + '/Subject').child(subject.id + '/name').set(subject.name)
+      db.ref('Std/' + context.state.id + '/Subject').child(subject.id + '/credit').set(subject.credit)
     },
-    showProduct (context) {
-      var ref = db.ref('products')
+    showSubject (context) {
+      var ref = db.ref('Std/' + context.state.id + '/Subject')
       ref.on('value', (snapshot) => {
-        context.commit('setProductall', snapshot.val())
+        context.commit('setSubject', snapshot.val())
       })
     },
-    updateStock (context, key) {
-      if (context.state.productall[key].count === 0) {
-        return 0
-      } else {
-        db.ref('products').child([key] + '/count').set(context.state.productall[key].count - 1)
-        if (context.state.carts[key] == null) {
-          db.ref('carts').child([key] + '/count').set(1)
-          db.ref('carts').child([key] + '/price').set(context.state.productall[key].price)
-          db.ref('carts').child('/total').set(1)
-        } else {
-          db.ref('carts').child([key] + '/count').set(context.state.carts[key].count + 1)
-          db.ref('carts').child([key] + '/price').set(context.state.carts[key].price + context.state.productall[key].price)
-          db.ref('carts').child('/total').set(context.state.carts.total + 1)
-        }
-      }
+    removeSubject (context, key) {
+      db.ref('Std/' + context.state.id + '/Subject').child(key).remove()
     }
   }
 })
